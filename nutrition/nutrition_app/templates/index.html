@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Form</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        #loading { display: none; }
+    </style>
+</head>
+<body>
+    <h1>Submit Food Name</h1>
+
+    <form id="food-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="result">
+        {% if calories %}
+            <p>Calories: {{ calories }}</p>
+        {% endif %}
+    </div>
+
+    <div id="loading">Loading...</div>
+
+    <script>
+        $(document).ready(function() {
+            $('#food-form').submit(function(event) {
+                event.preventDefault();  // Prevent default form submission
+
+                $('#loading').show();  // Show loading spinner
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "index" %}',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        $('#result').html('Calories: ' + response.calories);
+                    },
+                    error: function() {
+                        $('#result').html('An error occurred.');
+                    },
+                    complete: function() {
+                        $('#loading').hide();  // Hide loading spinner
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
